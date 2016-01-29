@@ -4,14 +4,16 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <title>LFL JavaScript Project</title>
-    <!-- <style type="text/css">@import 'styles.css';</style> -->
     <style>
-      html, body, .container {
+      html, body {
       height: 100%;
+      text-align: center;
       }
       .container {
-      display: flex;
-      justify-content: center;
+      margin: 0 auto;
+      width: 100%;
+      align-items: center;
+      background-color: #CCC;
       }
       .input-panel {
       width: 100%;
@@ -20,6 +22,12 @@
       justify-content: center;
       height: 15px;
       padding: 5px;
+      }
+      #map {
+      width: 900px;
+      height: 550px;
+      padding: 5px;
+      margin: 0 auto;
       }
     </style>
   </head>
@@ -32,18 +40,39 @@
       <input id="submit" type="button" value="Geocode">
     </div>
 
+    <script src="http://maps.googleapis.com/maps/api/js">
+    </script>
     <div id="map"></div>
     <script>
       function initMap() {
-        var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 8,
-          center: {lat: -34.397, lng: 150.644}
+        var mapDiv = document.getElementById('map');
+        var map = new google.maps.Map(mapDiv, {
+          center: {lat: 28.00, lng: 2.000},
+          zoom: 2
         });
         var geocoder = new google.maps.Geocoder();
       
-        document.getElementById('submit').addEventListener('click', function() {
-          geocodeAddress(geocoder, map);
+       document.getElementById('submit').addEventListener('click', function(){
+          geocodeAddress(geocoder, loadMap);
         });
       }
+
+      function geocodeAddress(geocoder, resultsMap) {
+      
+        var address = document.getElementById('address').value;
+        geocoder.geocode({'address': address}, function(results, status) {
+          if (status === google.maps.GeocoderStatus.OK) {
+            var marker = new google.maps.Marker({
+              map: resultsMap,
+              position: results[0].geometry.location
+            });
+          } else {
+            alert('Geocode was not successful for the following reason: ' + status);
+          }
+        });
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?callback=initMap"
+	    async defer></script>
   </body>
 </html>
