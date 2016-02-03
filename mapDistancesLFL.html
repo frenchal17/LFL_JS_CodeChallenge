@@ -44,34 +44,79 @@
     </script>
     <div id="map"></div>
     <script>
-      function initMap() {
-        var mapDiv = document.getElementById('map');
-        var map = new google.maps.Map(mapDiv, {
-          center: {lat: 28.00, lng: 2.000},
-          zoom: 2
-        });
-        var geocoder = new google.maps.Geocoder();
-      
-       document.getElementById('submit').addEventListener('click', function(){
-          geocodeAddress(geocoder, loadMap);
-        });
-      }
+      var locations = [
+      "Times Square, Manhattan, NY 10036",
+      "13000 S Dakota 244, Keystone, SD 57751",
+      "1600 Pennsylvania Ave NW, Washington, DC 20500",
+      "Golden Gate Bridge, San Fransisco, CA 94129",
+      "Stonehenge, A344, Amesbury, Wiltshire SP47DE, United Kingdom",
+      "Great Wall of China",
+      "Hollywood Sign, Los Angeles, CA"
+      ];
 
-      function geocodeAddress(geocoder, resultsMap) {
+      function initMap() {
+      var mapDiv = document.getElementById('map');
+      var map = new google.maps.Map(mapDiv, {
+      center: {lat: 28.00, lng: 2.000},
+      zoom: 2
+      });
+      var marker;
+      var geocoder = new google.maps.Geocoder();
       
-        var address = document.getElementById('address').value;
-        geocoder.geocode({'address': address}, function(results, status) {
-          if (status === google.maps.GeocoderStatus.OK) {
-            var marker = new google.maps.Marker({
-              map: resultsMap,
-              position: results[0].geometry.location
-            });
-          } else {
-            alert('Geocode was not successful for the following reason: ' + status);
-          }
-        });
-      }
-    </script>
+      for (i = 0; i < locations.length; i++) {
+		      geocoder.geocode({'address': locations[i]}, function(results, status) {
+		      marker = new google.maps.Marker({
+		      map: map,
+		      position: results[0].geometry.location,
+		      title: locations[i],
+		      animation: google.maps.Animation.DROP,
+		      address: locations[i]
+		      })
+		      })
+		      }
+		      
+		      document.getElementById('submit').addEventListener('click', function(){
+		      geocodeAddress(geocoder, map);
+		      });
+		      }
+
+		      function geocodeAddress(geocoder, resultsMap) {
+
+		      var address = document.getElementById('address').value;
+		      geocoder.geocode({'address': address}, function(results, status) {
+		      if (status === google.maps.GeocoderStatus.OK) {
+		      if (!locations[7]){
+		      marker = new google.maps.Marker({
+		      map: resultsMap,
+		      position: results[0].geometry.location,
+		      animation: google.maps.Animation.DROP
+		      });
+		      locations[7] = marker;
+		      var html = "<div><h3>" + address + "</h3>";
+		      iw = new google.maps.InfoWindow({
+		      content: html,
+		      maxWidth: 350
+		      });
+		      iw.open(map,locations[7]);
+		      } else {
+		      locations[7].setPosition(results[0].geometry.location);
+		      updateInfoWindow(marker, map, address, iw);
+		      }
+		      
+		      } else {
+		      alert('Geocode was not successful for the following reason: ' + status);
+		      }
+		      });
+      
+		      }
+
+		      function updateInfoWindow(marker, map, address, iw) {
+		      var html = "<div><h3>" + address + "</h3>";
+		      iw.setContent(html);
+		      iw.open(map,locations[7]);
+		      
+		      }
+		      </script>
     <script src="https://maps.googleapis.com/maps/api/js?callback=initMap"
 	    async defer></script>
   </body>
