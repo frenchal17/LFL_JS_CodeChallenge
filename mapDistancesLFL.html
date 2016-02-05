@@ -30,6 +30,9 @@
       margin: 0 auto;
       }
     </style>
+
+     <!-- <script src="https://maps.googleapis.com/maps/api/js?callback=initMap"
+	  async defer></script> -->
   </head>
   
   <body>
@@ -39,11 +42,13 @@
       <input id="address" type="textbox" value="510 Victoria, Venice, CA">
       <input id="submit" type="button" value="Geocode">
     </div>
+    
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js">
+</script>
 
-    <script src="http://maps.googleapis.com/maps/api/js">
-    </script>
+
     <div id="map"></div>
-    <script>
+    <script type="text/javascript">
       var locations = [
       "Times Square, Manhattan, NY 10036",
       "13000 S Dakota 244, Keystone, SD 57751",
@@ -54,7 +59,10 @@
       "Hollywood Sign, Los Angeles, CA"
       ];
 
-      function initMap() {
+      var locDictionary;
+      var infoWindow;
+      
+      window.onload = function initMap() {
       var mapDiv = document.getElementById('map');
       var map = new google.maps.Map(mapDiv, {
       center: {lat: 28.00, lng: 2.000},
@@ -62,62 +70,56 @@
       });
       var marker;
       var geocoder = new google.maps.Geocoder();
+      infoWindow = new google.maps.InfoWindow({
+      content: "placeholder"
+      });
       
-      for (i = 0; i < locations.length; i++) {
-		      geocoder.geocode({'address': locations[i]}, function(results, status) {
-		      marker = new google.maps.Marker({
-		      map: map,
-		      position: results[0].geometry.location,
-		      title: locations[i],
-		      animation: google.maps.Animation.DROP,
-		      address: locations[i]
-		      })
-		      })
-		      }
-		      
-		      document.getElementById('submit').addEventListener('click', function(){
-		      geocodeAddress(geocoder, map);
-		      });
-		      }
-
-		      function geocodeAddress(geocoder, resultsMap) {
-
-		      var address = document.getElementById('address').value;
-		      geocoder.geocode({'address': address}, function(results, status) {
-		      if (status === google.maps.GeocoderStatus.OK) {
-		      if (!locations[7]){
-		      marker = new google.maps.Marker({
-		      map: resultsMap,
-		      position: results[0].geometry.location,
-		      animation: google.maps.Animation.DROP
-		      });
-		      locations[7] = marker;
-		      var html = "<div><h3>" + address + "</h3>";
-		      iw = new google.maps.InfoWindow({
-		      content: html,
-		      maxWidth: 350
-		      });
-		      iw.open(map,locations[7]);
-		      } else {
-		      locations[7].setPosition(results[0].geometry.location);
-		      updateInfoWindow(marker, map, address, iw);
-		      }
-		      
-		      } else {
-		      alert('Geocode was not successful for the following reason: ' + status);
-		      }
-		      });
+      for (var i in locations) {
+      geocoder.geocode({'address': locations[i]}, function(results, status) {
       
-		      }
+      marker = new google.maps.Marker({
+      map: map,
+      position: results[0].geometry.location,
+      title: locations[i],
+      animation: google.maps.Animation.DROP,
+      address: locations[i]
+      })
+      })
+      }
+      
+      document.getElementById('submit').addEventListener('click', function(){
+      geocodeAddress(geocoder, map);
+      });
+      }
 
-		      function updateInfoWindow(marker, map, address, iw) {
-		      var html = "<div><h3>" + address + "</h3>";
-		      iw.setContent(html);
-		      iw.open(map,locations[7]);
-		      
-		      }
-		      </script>
-    <script src="https://maps.googleapis.com/maps/api/js?callback=initMap"
-	    async defer></script>
+      function geocodeAddress(geocoder, resultsMap) {
+
+      var address = document.getElementById('address').value;
+      geocoder.geocode({'address': address}, function(results, status) {
+      if (status === google.maps.GeocoderStatus.OK) {
+      if (!locations[7]){
+      marker = new google.maps.Marker({
+      map: resultsMap,
+      position: results[0].geometry.location,
+      animation: google.maps.Animation.DROP
+      });
+      locations[7] = marker;
+      } else {
+      locations[7].setPosition(results[0].geometry.location);
+      }
+      var html = "<div><h3>" + address + "</h3>";
+	infoWindow.setContent(html);
+	var newMark = locations[7];
+	infoWindow.open(resultsMap, locations[7]);
+	
+	} else {
+	alert('Geocode was not successful for the following reason: ' + status);
+	}
+	});
+	
+	}
+
+    </script>
+    
   </body>
 </html>
